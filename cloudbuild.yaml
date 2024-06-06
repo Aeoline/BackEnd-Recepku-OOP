@@ -1,18 +1,18 @@
 steps:
     - name: "gcr.io/cloud-builders/docker"
-      args: ["build", "-t", "gcr.io/plate-recognition/plate-recognition-api", "."]
+      args: ["build", "-t", "gcr.io/recepku-api/recepku-api", "."]
   
     - name: "gcr.io/cloud-builders/docker"
-      args: ["push", "gcr.io/plate-recognition/plate-recognition-api"]
+      args: ["push", "gcr.io/recepku/recepku-api"]
   
     - name: "gcr.io/cloud-builders/gcloud"
       args:
         [
           "run",
           "deploy",
-          "plate-recognition-api",
+          "recepku-api",
           "--image",
-          "gcr.io/plate-recognition/plate-recognition-api",
+          "gcr.io/recepku/recepku-api",
           "--allow-unauthenticated",
           "--region",
           "asia-southeast2",
