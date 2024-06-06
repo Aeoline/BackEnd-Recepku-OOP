@@ -15,7 +15,12 @@ class RecipeController {
       const snapshot = await db.collection("makanan").get();
 
       snapshot.forEach((doc) => {
-        makanan.push(doc.data());
+        const data = doc.data();
+        // Ensure healthySteps is always an array
+        if (!Array.isArray(data.healthySteps)) {
+          data.healthySteps = data.healthySteps ? [data.healthySteps] : [];
+        }
+        makanan.push(data);
       });
 
       res.status(200).json({

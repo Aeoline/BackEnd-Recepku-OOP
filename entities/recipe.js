@@ -13,8 +13,8 @@ class Recipe {
     this.ingredients = data.ingredients;
     this.healthyIngredients = data.healthyIngredients;
     this.steps = data.steps;
-    this.healthySteps = data.healthySteps;
-    this.isFavorite = false;
+    this.healthySteps = Array.isArray(data.healthySteps) ? data.healthySteps : [data.healthySteps];
+    this.isFavorite = data.isFavorite || false;
     this.photoUrl = data.photoUrl;
     this.created_on = data.created_on || new Date();
   }
@@ -29,8 +29,8 @@ class Recipe {
       healthyCalories: z.string().nonempty("Healthy Calories is required"),
       ingredients: z.string().nonempty("Ingredients is required"),
       healthyIngredients: z.string().nonempty("Healthy Ingredients is required"),
-      steps: z.string().nonempty("Steps is required"),
-      healthySteps: z.string().nonempty("Healthy Steps is required"),
+      steps: z.array(z.string()).nonempty("Steps is required"),
+      healthySteps: z.array(z.string()).nonempty("Healthy Steps is required"),
       isFavorite: z.boolean().default(false),
       created_on: z.date().default(new Date()),
     });
