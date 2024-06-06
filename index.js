@@ -71,6 +71,9 @@ app.use(profile)
 // makanan route
 var recipe = require('./routes/recipe.route')
 app.use(recipe)
+// main route
+var main = require('./routes/main.route')
+app.use(main)
 
 //seeder_makanan route
 var seeder_makanan = require('./route/seeder_makanan')

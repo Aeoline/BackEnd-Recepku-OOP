@@ -1,0 +1,22 @@
+steps:
+    - name: "gcr.io/cloud-builders/docker"
+      args: ["build", "-t", "gcr.io/plate-recognition/plate-recognition-api", "."]
+  
+    - name: "gcr.io/cloud-builders/docker"
+      args: ["push", "gcr.io/plate-recognition/plate-recognition-api"]
+  
+    - name: "gcr.io/cloud-builders/gcloud"
+      args:
+        [
+          "run",
+          "deploy",
+          "plate-recognition-api",
+          "--image",
+          "gcr.io/plate-recognition/plate-recognition-api",
+          "--allow-unauthenticated",
+          "--region",
+          "asia-southeast2",
+        ]
+  
+  options:
+    logging: CLOUD_LOGGING_ONLY

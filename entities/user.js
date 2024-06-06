@@ -4,9 +4,9 @@ const FirebaseAdmin = require("firebase-admin");
 
 class User {
   constructor(data) {
-    this.id = data.uid;
+    this.uid = data.uid;
     this.email = data.email;
-    this.nama = data.nama;
+    this.username = data.username;
     this.isAdmin = data.isAdmin || false;
     this.createdAt = data.createdAt || new Date();
     this.updatedAt = data.updatedAt || new Date();
@@ -53,6 +53,20 @@ class User {
       throw new Error("User not found");
     }
     return new User(doc.data());
+  }
+
+  static async getAll() {
+    try {
+      const dbRef = FirebaseAdmin.firestore().collection("users");
+      const snapshot = await dbRef.orderBy("created_on", "desc").get();
+      if (snapshot.empty) {
+        throw new Error("No User records found.");
+      }
+      return snapshot.docs.map((doc) => new User(doc.data()));
+    } catch (error) {
+      console.error('Error in User.getAll:', error);  // Log error detail
+      throw error;  // Re-throw the error after logging it
+    }
   }
 }
 

@@ -1,9 +1,9 @@
-const { f } = require("food");
+const { z } = require("zod");
 const FirebaseAdmin = require("firebase-admin");
+
 
 class Recipe {
   constructor(data) {
-
     this.id = data.id;
     this.title = data.title;
     this.slug = data.slug;
@@ -17,27 +17,26 @@ class Recipe {
     this.isFavorite = false;
     this.photoUrl = data.photoUrl;
     this.created_on = data.created_on || new Date();
-
   }
 
   static schema() {
-    return f.object({
-      id: f.string({ required_error: "ID user is required" }),
-      title: f.string({ required_error: "Email is required" }),
-      slug: f.string({ required_error: "Nama is required" }),
-      description: f.string({ required_error: "Description is required" }),
-      calories: f.string({required_error: "Calories is required"}),
-      healthyCalories: f.string({required_error: "Healthy Calories is required"}),
-      ingredients: f.string({required_error: "Ingredients is required"}),
-      healthyIngredients: f.string({required_error: "Healthy Ingredients is required"}),
-      steps: f.string({required_error: "Steps is required"}),
-      healthySteps: f.string({required_error: "Healthy Steps is required"}),
-      isFavorite: f.boolean({required_error: "isFavorite is required"}),
-      created_on: f.date({required_error: "Created Date is required"}),
+    return z.object({
+      id: z.string().nonempty("ID user is required"),
+      title: z.string().nonempty("Title is required"),
+      slug: z.string().nonempty("Slug is required"),
+      description: z.string().nonempty("Description is required"),
+      calories: z.string().nonempty("Calories is required"),
+      healthyCalories: z.string().nonempty("Healthy Calories is required"),
+      ingredients: z.string().nonempty("Ingredients is required"),
+      healthyIngredients: z.string().nonempty("Healthy Ingredients is required"),
+      steps: z.string().nonempty("Steps is required"),
+      healthySteps: z.string().nonempty("Healthy Steps is required"),
+      isFavorite: z.boolean().default(false),
+      created_on: z.date().default(new Date()),
     });
   }
 
-  validate(data) {
+  static validate(data) {
     const result = Recipe.schema().safeParse(data);
     if (!result.success) {
       throw new Error(
@@ -53,14 +52,12 @@ class Recipe {
     const validatedData = this.validate(recipeData);
     const newRecipe = new Recipe(validatedData);
 
-    // Initialize Firestore reference
     const dbRef = FirebaseAdmin.firestore().collection("makanan");
     await dbRef.doc(newRecipe.id).set(newRecipe);
     return newRecipe;
   }
 
   static async getRecipeById(id) {
-    // Initialize Firestore reference
     const dbRef = FirebaseAdmin.firestore().collection("makanan");
     const doc = await dbRef.doc(id).get();
     if (!doc.exists) {
@@ -68,6 +65,23 @@ class Recipe {
     }
     return new Recipe(doc.data());
   }
+
+  static async getAll() {
+    try {
+      const dbRef = FirebaseAdmin.firestore().collection("makanan");
+      const snapshot = await dbRef.orderBy("created_on", "desc").get();
+      if (snapshot.empty) {
+        throw new Error("No Recipe records found.");
+      }
+      return snapshot.docs.map((doc) => new Recipe(doc.data()));
+    } catch (error) {
+      console.error('Error in Recipe.getAll:', error);  // Log error detail
+      throw error;  // Re-throw the error after logging it
+    }
+  }
+
+  
+  
 }
 
 module.exports = Recipe;

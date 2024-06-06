@@ -1,5 +1,5 @@
 var router = require('express').Router()
-var fire = require('../config/dbConfig')
+const { fire, uploadImage } = require('../config/dbConfig');
 var bodyParser = require('body-parser')
 var bycript = require('bcryptjs')
 var db = fire.firestore()

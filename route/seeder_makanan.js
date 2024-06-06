@@ -1,5 +1,5 @@
 var router = require("express").Router();
-var fire = require('../config/dbConfig')
+const { fire, uploadImage } = require('../config/dbConfig');
 var fs = require("fs");
 var path = require("path");
 var db = fire.firestore();

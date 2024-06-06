@@ -8,12 +8,12 @@ const pathKey = path.resolve('./serviceaccountkey.json')
 
 // fonfigurasi Storage
 const gcs = new Storage({
-    projectId: 'capstone-bangkit01',
+    projectId: 'skripsi-db-recepku',
     keyFilename: pathKey
 })
 
 // fonfigurasi Bucket
-const bucketName = 'capstone-bangkit-bucket'
+const bucketName = 'skripsi-db-recepku.appspot.com'
 const bucket = gcs.bucket(bucketName)
 
 // folder di dalam bucket
@@ -21,7 +21,7 @@ const folder = 'Photo-Profile'
 
 // fungsi untuk membuat nama file unik
 function getPublicUrl(filename) {
-    return `https://storage.googleapis.com/${bucketName}/${folder}/${filename}`
+    return `gs://skripsi-db-recepku.appspot.com/${bucketName}/${folder}/${filename}`
 }
 
 let ImgUpload = {}

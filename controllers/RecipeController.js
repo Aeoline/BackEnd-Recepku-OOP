@@ -1,9 +1,10 @@
 var router = require("express").Router();
-var fire = require("../config/dbConfig");
+const { fire, uploadImage } = require('../config/dbConfig');
 var bodyParser = require("body-parser");
 var bcrypt = require("bcryptjs");
 var db = fire.firestore();
 const { v4: uuidv4 } = require("uuid");
+const multer = require('multer')
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 
@@ -237,5 +238,4 @@ class RecipeController {
     }
   }
 }
-
 module.exports = RecipeController;

@@ -1,44 +1,143 @@
-var router = require("express").Router();
-var fire = require("../config/dbConfig");
-var bodyParser = require("body-parser");
-var bcrypt = require("bcryptjs");
+const { fire, uploadImage } = require('../config/dbConfig');
 var db = fire.firestore();
-const { v4: uuidv4 } = require("uuid");
-router.use(bodyParser.json());
-router.use(bodyParser.urlencoded({ extended: true }));
+const Recipe = require("../entities/recipe");
+const User = require("../entities/user");
 
 class MainController {
-    async getAllData(req, res) {
-      try {
-        const recipes = [];
-        const users = [];
-        const recipesSnapshot = await db.collection("makanan").get();
-        const usersSnapshot = await db.collection("users").get();
-  
-        recipesSnapshot.forEach((doc) => {
-          recipes.push(doc.data());
-        });
-  
-        usersSnapshot.forEach((doc) => {
-          users.push(doc.data());
-        });
-  
-        res.status(200).json({
-          message: "success",
-          data: {
-            totalRecipes: recipes.length,
-            totalUsers: users.length,
-            recipes: recipes,
-            users: users
-          }
-        });
-      } catch (err) {
-        res.status(500).json({
-          message: "error",
-          data: err
-        });
-      }
+  async getSizeRecipes(req, res) {
+    try {
+      const recipes = (await Recipe.getAll()).map((recipe) => ({
+        id: recipe.id,
+        title: recipe.title,
+        calories: recipe.calories,
+      }));
+
+      const recipeSize = recipes.length;
+
+      const data = {
+        recipe: {
+          title: "Resep Makanan",
+          data: recipes,
+          size: recipeSize,
+        }
+      };
+
+      res.status(200).json({
+        success: true,
+        message: "All data fetched successfully",
+        data: {
+          size: recipeSize
+        }
+      });
+      
+    } catch (err) {
+      console.error('Error fetching data:', err);  // Log the error
+      res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+        error: err.message,  // Provide the error message
+      });
     }
   }
+
+  async getSizeUsers(req, res) {
+    try {
+      const users = (await User.getAll()).map((user) => ({
+        id: user.id,
+        title: user.title,
+        calories: user.calories,
+      }));
+
+      const userSize = users.length;
+
+      const data = {
+        recipe: {
+          title: "User",
+          data: users,
+          size: userSize,
+        }
+      };
+
+      res.status(200).json({
+        success: true,
+        message: "All data fetched successfully",
+        data: {
+          size: userSize
+        }
+      });
+      
+    } catch (err) {
+      console.error('Error fetching data:', err);  // Log the error
+      res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+        error: err.message,  // Provide the error message
+      });
+    }
+  }
+
+  async getLatestRecipes(req, res) {
+    try {
+      const recipes = (await Recipe.getAll()).slice(0, 5).map((recipe) => ({
+        id: recipe.id,
+        photo: recipe.photoUrl,
+        title: recipe.title,
+        calories: recipe.calories,
+      }));
+  
+      const data = {
+        recipe: {
+          title: "Resep Makanan",
+          data: recipes,
+        }
+      };
+  
+      res.status(200).json({
+        success: true,
+        message: "Top 5 data fetched successfully",
+        data: data,
+      });
+    } catch (err) {
+      console.error('Error fetching data:', err);
+      res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+        error: err.message,
+      });
+    }
+  }
+
+  async getLatestUsers(req, res) {
+    try {
+      const users = (await User.getAll()).slice(0, 5).map((user) => ({
+        uid: user.uid,
+        username: user.username,
+        email: user.email,
+        role: user.isAdmin,
+      }));
+  
+      const data = {
+        user: {
+          title: "Users",
+          data: users,
+        }
+      };
+  
+      res.status(200).json({
+        success: true,
+        message: "Top 5 data fetched successfully",
+        data: data,
+      });
+    } catch (err) {
+      console.error('Error fetching data:', err);
+      res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+        error: err.message,
+      });
+    }
+  }
+  
+}
 
 module.exports = MainController;
