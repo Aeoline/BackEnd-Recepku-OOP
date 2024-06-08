@@ -18,6 +18,7 @@ router.get("/recipes/:title", (req, res) => {
 router.post("/recipes", (req, res) => recipeController.addRecipe(req, res));
 router.put("/recipes/:id", (req, res) => recipeController.updateRecipe(req, res));
 router.delete("/recipes/:id", (req, res) => recipeController.deleteRecipe(req, res));
+router.get("/favrecipes/", (req, res) => recipeController.getFavRecipe(req, res));
 
 router.get("/main/getTotalRecipe", (req, res) => mainController.getAllData(req, res));
 
