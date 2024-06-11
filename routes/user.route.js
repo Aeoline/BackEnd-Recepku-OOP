@@ -13,15 +13,15 @@ router.use((req, res, next) => {
     next();
   });
   
-  // Gunakan middleware dengan urutan yang benar
-  router.use(middleware.isUserMiddleware);
-  router.use(middleware.isAdminMiddleware);
+//   // Gunakan middleware dengan urutan yang benar
+// router.use(middleware.isUserMiddleware);
+// router.use(middleware.isAdminMiddleware);
 
   
 
-router.get("/users", (req, res) => userController.getAllUsers(req, res));
-router.get("/users/:uid", (req, res) => userController.getUserById(req, res));
-router.put("/users/:uid", (req, res) => userController.editUser(req, res));
-router.delete("/users/:uid", (req, res) => userController.deleteUser(req, res));
+router.get("/users", [middleware.isUserMiddleware, middleware.isAdminMiddleware], (req, res) => userController.getAllUsers(req, res));
+router.get("/users/:uid", [middleware.isUserMiddleware, middleware.isAdminMiddleware], (req, res) => userController.getUserById(req, res));
+router.put("/users/:uid",  [middleware.isUserMiddleware, middleware.isAdminMiddleware],(req, res) => userController.editUser(req, res));
+router.delete("/users/:uid", [middleware.isUserMiddleware, middleware.isAdminMiddleware], (req, res) => userController.deleteUser(req, res));
 
 module.exports = router;
