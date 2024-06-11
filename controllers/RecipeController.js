@@ -1,10 +1,10 @@
 var router = require("express").Router();
-const { fire, uploadImage } = require('../config/dbConfig');
+const { fire, uploadImage } = require("../config/dbConfig");
 var bodyParser = require("body-parser");
 var bcrypt = require("bcryptjs");
 var db = fire.firestore();
 const { v4: uuidv4 } = require("uuid");
-const multer = require('multer')
+const multer = require("multer");
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 
@@ -91,39 +91,38 @@ class RecipeController {
   async getFavRecipe(req, res) {
     try {
       const makanan = [];
-      
+
       // Menambahkan logging sebelum query Firestore
       console.log("Fetching favorite recipes from Firestore...");
-  
+
       const snapshot = await db
         .collection("makanan")
         .where("isFavorite", "==", true)
         .get();
-  
+
       // Menambahkan logging setelah mendapatkan snapshot
       console.log("Query successful. Processing snapshot...");
-  
+
       snapshot.forEach((doc) => {
         makanan.push(doc.data());
       });
-  
+
       // Menambahkan logging sebelum mengirim respons
       console.log("Favorite recipes fetched successfully:", makanan);
-  
+
       res.status(200).json({
         message: "success",
         data: makanan,
       });
     } catch (err) {
       console.error("Error fetching favorite recipes:", err);
-  
+
       res.status(500).json({
         message: "error",
         data: err.message || err, // Mengirim pesan kesalahan yang lebih jelas
       });
     }
   }
-  
 
   async searchRecipe(req, res) {
     try {
