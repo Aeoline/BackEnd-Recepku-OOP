@@ -1,4 +1,4 @@
-const { fire, uploadImage } = require('../config/dbConfig');
+const { fire, uploadImage } = require("../config/dbConfig");
 var db = fire.firestore();
 const Recipe = require("../entities/recipe");
 const User = require("../entities/user");
@@ -19,23 +19,22 @@ class MainController {
           title: "Resep Makanan",
           data: recipes,
           size: recipeSize,
-        }
+        },
       };
 
       res.status(200).json({
         success: true,
         message: "All data fetched successfully",
         data: {
-          size: recipeSize
-        }
+          size: recipeSize,
+        },
       });
-      
     } catch (err) {
-      console.error('Error fetching data:', err);  // Log the error
+      console.log("Error fetching data:", err); // Log the error
       res.status(500).json({
         success: false,
         message: "Internal Server Error",
-        error: err.message,  // Provide the error message
+        error: err.message, // Provide the error message
       });
     }
   }
@@ -55,23 +54,22 @@ class MainController {
           title: "User",
           data: users,
           size: userSize,
-        }
+        },
       };
 
       res.status(200).json({
         success: true,
         message: "All data fetched successfully",
         data: {
-          size: userSize
-        }
+          size: userSize,
+        },
       });
-      
     } catch (err) {
-      console.error('Error fetching data:', err);  // Log the error
+      console.log("Error fetching data:", err); // Log the error
       res.status(500).json({
         success: false,
         message: "Internal Server Error",
-        error: err.message,  // Provide the error message
+        error: err.message, // Provide the error message
       });
     }
   }
@@ -84,21 +82,21 @@ class MainController {
         title: recipe.title,
         calories: recipe.calories,
       }));
-  
+
       const data = {
         recipe: {
           title: "Resep Makanan",
           data: recipes,
-        }
+        },
       };
-  
+
       res.status(200).json({
         success: true,
         message: "Top 5 data fetched successfully",
         data: data,
       });
     } catch (err) {
-      console.error('Error fetching data:', err);
+      console.log("Error fetching data:", err);
       res.status(500).json({
         success: false,
         message: "Internal Server Error",
@@ -115,21 +113,21 @@ class MainController {
         email: user.email,
         role: user.isAdmin,
       }));
-  
+
       const data = {
         user: {
           title: "Users",
           data: users,
-        }
+        },
       };
-  
+
       res.status(200).json({
         success: true,
         message: "Top 5 data fetched successfully",
         data: data,
       });
     } catch (err) {
-      console.error('Error fetching data:', err);
+      console.log("Error fetching data:", err);
       res.status(500).json({
         success: false,
         message: "Internal Server Error",
@@ -137,7 +135,6 @@ class MainController {
       });
     }
   }
-  
 }
 
 module.exports = MainController;
