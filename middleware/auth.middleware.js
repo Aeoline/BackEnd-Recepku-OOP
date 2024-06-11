@@ -6,10 +6,7 @@ const jwt = require("jsonwebtoken");
 const secretKey = "MyLovelyYaeMiko";
 
 const isUserMiddleware = async (req, res, next) => {
-  if (
-    !req.headers.authorization ||
-    !req.headers.authorization.startsWith("Bearer ")
-  ) {
+  if (!req.headers.authorization || !req.headers.authorization.startsWith("Bearer ")) {
     return res.status(401).send({
       success: false,
       message: "Unauthorized",
@@ -35,6 +32,7 @@ const isUserMiddleware = async (req, res, next) => {
         });
       }
       req.user = user;
+      console.log("User authenticated:", user); // Logging user
       next();
     });
   } catch (error) {
@@ -55,12 +53,14 @@ const isAdminMiddleware = async (req, res, next) => {
   }
 
   if (!req.user.isAdmin) {
+    console.error("User is not an admin:", req.user); // Logging non-admin user
     return res.status(403).json({
       error: true,
       message: "Forbidden",
     });
   }
 
+  console.log("User is admin:", req.user); // Logging admin user
   next();
 };
 
