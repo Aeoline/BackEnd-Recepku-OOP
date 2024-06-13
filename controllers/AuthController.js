@@ -53,14 +53,14 @@ class AuthController {
           isAdmin: user.isAdmin,
         },
         secretKey,
-        { expiresIn: "1h" }
+        { expiresIn: "1 month" }
       );
 
       // Simpan token di cookie
       res.cookie("access_token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production", // Set to true in production
-        maxAge: 3600000, // 1 hour
+        maxAge: 2,629,746,000, // 1 month
         path: "/", // Ensure the cookie is accessible on all routes
       });
 
