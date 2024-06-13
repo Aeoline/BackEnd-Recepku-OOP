@@ -271,9 +271,9 @@ class AuthController {
     }
   }
 
-  async refereshToken(req, res) {
+  async refreshToken(req, res) {
     const user = req.user;
-
+  
     // Generate new token
     const newToken = jwt.sign(
       {
@@ -286,11 +286,24 @@ class AuthController {
       secretKey,
       { expiresIn: "1h" }
     );
-
-    // Send new token to client
-    res.json({
-      error: false,
+  
+    // Data response
+    const data = {
       token: newToken,
+      user: {
+        uid: user.uid,
+        username: user.username,
+        email: user.email,
+        image_url: user.image_url,
+        isAdmin: user.isAdmin,
+      }
+    };
+  
+    // Send new token to client
+    res.status(200).json({
+      success: true,
+      message: "Token refreshed successfully",
+      data: data,
     });
   }
 }

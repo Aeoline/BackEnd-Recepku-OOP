@@ -15,7 +15,7 @@ router.get("/verify-token", (req, res) => authController.authenticateToken(req, 
 
 router.get("/logout", (req, res) => authController.logout(req, res));
 
-router.post("/refresh-token", middleware.isUserMiddleware, (req, res) => authController.refereshToken(req, res));
+router.post("/refresh-token", middleware.isUserMiddleware, (req, res) => authController.refreshToken(req, res));
 
 // router.get("/verify-token", (req, res) => authController.verifyToken(req, res));
 module.exports = router;
