@@ -288,7 +288,7 @@ class AuthController {
     );
   
     // Data response
-    const data = {
+    const data_token= {
       token: newToken,
       user: {
         uid: user.uid,
@@ -303,7 +303,7 @@ class AuthController {
     res.status(200).json({
       success: true,
       message: "Token refreshed successfully",
-      data: data,
+      data: data_token,
     });
   }
 }
