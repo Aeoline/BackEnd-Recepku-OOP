@@ -60,7 +60,7 @@ class AuthController {
       res.cookie("access_token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production", // Set to true in production
-        maxAge: 3600000, // 1 hour
+        maxAge: 30000, // 1 hour
         path: "/", // Ensure the cookie is accessible on all routes
       });
 
