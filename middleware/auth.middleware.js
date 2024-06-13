@@ -7,7 +7,6 @@ const secretKey = "MyLovelyYaeMiko";
 
 const isUserMiddleware = async (req, res, next) => {
   if (!req.headers.authorization || !req.headers.authorization.startsWith("Bearer ")) {
-    console.log("No token found in request:", req.headers.authorization); // Logging no token
     return res.status(401).send({
       success: false,
       message: "Unauthorized",
@@ -15,11 +14,9 @@ const isUserMiddleware = async (req, res, next) => {
   }
 
   const token = req.headers.authorization.split("Bearer ")[1];
-  // console.log("Token found in request:", token); // Logging token
 
   try {
     if (!token) {
-      console.log("No token found in request:", token); // Logging no token
       return res.status(401).json({
         error: true,
         message: "Unauthorized",
