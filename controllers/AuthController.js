@@ -181,54 +181,54 @@ class AuthController {
     }
   }
 
-  async verifyToken(req, res) {
-    if (
-      !req.headers.authorization ||
-      !req.headers.authorization.startsWith("Bearer ")
-    ) {
-      return res.status(401).send({
-        success: false,
-        message: "Unauthorized",
-      });
-    }
-    const idToken = req.headers.authorization.split("Bearer ")[1];
+  // async verifyToken(req, res) {
+  //   if (
+  //     !req.headers.authorization ||
+  //     !req.headers.authorization.startsWith("Bearer ")
+  //   ) {
+  //     return res.status(401).send({
+  //       success: false,
+  //       message: "Unauthorized",
+  //     });
+  //   }
+  //   const idToken = req.headers.authorization.split("Bearer ")[1];
 
-    try {
-      const decodedToken = await getAuth().verifyIdToken(idToken);
-      const uid = decodedToken.uid;
+  //   try {
+  //     const decodedToken = await getAuth().verifyIdToken(idToken);
+  //     const uid = decodedToken.uid;
 
-      if (!uid) {
-        return res.status(401).send({
-          success: false,
-          message: "Unauthorized",
-        });
-      }
+  //     if (!uid) {
+  //       return res.status(401).send({
+  //         success: false,
+  //         message: "Unauthorized",
+  //       });
+  //     }
 
-      const user = await User.getUserByUid(uid);
-      if (!user) {
-        return res.status(401).send({
-          success: false,
-          message: "Unauthorized",
-        });
-      }
+  //     const user = await User.getUserByUid(uid);
+  //     if (!user) {
+  //       return res.status(401).send({
+  //         success: false,
+  //         message: "Unauthorized",
+  //       });
+  //     }
 
-      return res.status(200).send({
-        success: true,
-        message: "Token is valid",
-        data: {
-          id: uid,
-          nama: user.name,
-          email: user.email,
-          isAdmin: user.isAdmin,
-        },
-      });
-    } catch (error) {
-      res.status(error.code === "auth/id-token-expired" ? 401 : 500).send({
-        success: false,
-        message: error.message,
-      });
-    }
-  }
+  //     return res.status(200).send({
+  //       success: true,
+  //       message: "Token is valid",
+  //       data: {
+  //         id: uid,
+  //         nama: user.name,
+  //         email: user.email,
+  //         isAdmin: user.isAdmin,
+  //       },
+  //     });
+  //   } catch (error) {
+  //     res.status(error.code === "auth/id-token-expired" ? 401 : 500).send({
+  //       success: false,
+  //       message: error.message,
+  //     });
+  //   }
+  // }
 
   async authenticateToken(req, res) {
     const authHeader = req.headers["authorization"];
@@ -269,6 +269,29 @@ class AuthController {
       console.log(err);
       return res.status(500).json({ message: "Internal server error" });
     }
+  }
+
+  async refereshToken(req, res) {
+    const user = req.user;
+
+    // Generate new token
+    const newToken = jwt.sign(
+      {
+        uid: user.uid,
+        username: user.username,
+        email: user.email,
+        image_url: user.image_url,
+        isAdmin: user.isAdmin,
+      },
+      secretKey,
+      { expiresIn: "1h" }
+    );
+
+    // Send new token to client
+    res.json({
+      error: false,
+      token: newToken,
+    });
   }
 }
 

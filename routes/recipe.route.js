@@ -16,7 +16,7 @@ router.get("/recipes/:title", middleware.isUserMiddleware, (req, res) => {
 });
 
 router.use((req, res, next) => {
-  console.log("Middleware executed");
+  console.log("Middleware executed Recipe");
   next();
 });
 
