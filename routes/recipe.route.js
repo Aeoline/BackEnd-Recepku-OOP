@@ -25,6 +25,6 @@ router.post("/recipes", [middleware.isUserMiddleware, middleware.isAdminMiddlewa
 router.put("/recipes/:id", [middleware.isUserMiddleware, middleware.isAdminMiddleware], (req, res) => recipeController.updateRecipe(req, res));
 router.delete("/recipes/:id", [middleware.isUserMiddleware, middleware.isAdminMiddleware], (req, res) => recipeController.deleteRecipe(req, res));
 
-router.get("/recommended_recipes/", middleware.isUserMiddleware, (req, res) => recipeController.getFavRecipe(req, res));
+router.get("/recommended_recipes/", (req, res) => recipeController.getFavRecipe(req, res));
 
 module.exports = router;
