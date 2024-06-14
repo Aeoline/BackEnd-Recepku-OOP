@@ -6,13 +6,13 @@ const middleware = require("../middleware/auth.middleware");
 
 const recipeController = new RecipeController();
 
-
 router.use((req, res, next) => {
   console.log("Middleware executed Recipe");
   next();
 });
 
 router.get("/recipes", (req, res) => recipeController.getAllRecipe(req, res));
+
 router.get("/recipes/:id", middleware.isUserMiddleware, (req, res) => recipeController.getRecipeById(req, res));
 router.get("/recipes/:slug", middleware.isUserMiddleware, (req, res) => {
   recipeController.getRecipeBySlug(req, res);
