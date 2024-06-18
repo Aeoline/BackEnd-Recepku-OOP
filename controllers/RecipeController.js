@@ -265,7 +265,7 @@ class RecipeController {
     try {
       const recipeIds = id.split(","); // Memisahkan ID pengguna yang dipisahkan oleh koma menjadi array
       const deletePromises = recipeIds.map(async (recipeId) => {
-        const docRef = db.collection("recipes").doc(recipeId);
+        const docRef = db.collection("makanan").doc(recipeId);
         const user = await docRef.get();
 
         if (!user.exists) {
