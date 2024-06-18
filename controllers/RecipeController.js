@@ -281,7 +281,7 @@ class RecipeController {
         return {
           recipeId,
           success: true,
-          message: "Delete user successfully",
+          message: "Delete recipe successfully",
         };
       });
 
