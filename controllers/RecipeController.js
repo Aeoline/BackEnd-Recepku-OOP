@@ -260,41 +260,25 @@ class RecipeController {
   }
 
   async deleteRecipes(req, res) {
-    const { id } = req.params;
-
     try {
-      const recipeIds = id.split(","); // Memisahkan ID pengguna yang dipisahkan oleh koma menjadi array
-      const deletePromises = recipeIds.map(async (recipeId) => {
-        const docRef = db.collection("makanan").doc(recipeId);
-        const user = await docRef.get();
+        const recipeIds = req.params.ids.split(',');
 
-        if (!user.exists) {
-          return {
-            recipeId,
-            success: false,
-            message: "Recipes not found",
-          };
-        }
+        const deletePromises = recipeIds.map((id) => db.collection("makanan").doc(id).delete());
+        await Promise.all(deletePromises);
 
-        await docRef.delete();
-
-        return {
-          recipeId,
-          success: true,
-          message: "Delete recipe successfully",
-        };
-      });
-
-      const results = await Promise.all(deletePromises);
-
-      res.status(200).json(results);
+        console.log("Resep berhasil dihapus");
+        return res.status(200).json({
+            error: false,
+            message: "Resep berhasil dihapus",
+        });
     } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: error.message,
-      });
+        console.log(error);
+        return res.status(500).json({
+            error: true,
+            message: error,
+        });
     }
   }
-}
 
+}
 module.exports = RecipeController;
