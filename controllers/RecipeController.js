@@ -259,24 +259,23 @@ class RecipeController {
     }
   }
 
-  async deleteRecipes(req, res) {
+  async deleteRecipe(req, res) {
     try {
-        const recipeIds = req.params.ids.split(',');
+      const recipeId = req.params.id;
 
-        const deletePromises = recipeIds.map((id) => db.collection("makanan").doc(id).delete());
-        await Promise.all(deletePromises);
+      await db.collection("makanan").doc(recipeId).delete();
 
-        console.log("Resep berhasil dihapus");
-        return res.status(200).json({
-            error: false,
-            message: "Resep berhasil dihapus",
-        });
+      console.log("Resep berhasil dihapus");
+      return res.status(200).json({
+        error: false,
+        message: "Resep berhasil dihapus",
+      });
     } catch (error) {
-        console.log(error);
-        return res.status(500).json({
-            error: true,
-            message: error,
-        });
+      console.log(error);
+      return res.status(500).json({
+        error: true,
+        message: error,
+      });
     }
   }
 
