@@ -23,6 +23,8 @@ class RecipeController {
         makanan.push(data);
       });
 
+      makanan.sort((a, b) => new Date(b.created_on) - new Date(a.created_on));
+      
       res.status(200).json({
         message: "success",
         data: makanan,
