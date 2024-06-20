@@ -25,64 +25,64 @@ class AuthController {
     try {
       const { username, password } = req.body;
 
-    // Cari pengguna berdasarkan username atau email
-    const userSnapshot = await db
-      .collection('users')
-      .where('username', '==', username)
-      .get();
+      // Cari pengguna berdasarkan username atau email
+      const userSnapshot = await db
+        .collection("users")
+        .where("username", "==", username)
+        .get();
 
-    if (userSnapshot.empty) {
-      return res.status(401).json({ message: 'Username or email not found' });
+      if (userSnapshot.empty) {
+        return res.status(401).json({ message: "Username or email not found" });
+      }
+
+      const user = userSnapshot.docs[0].data();
+
+      // Bandingkan password
+      const isValid = await bcrypt.compare(password, user.password);
+      if (!isValid) {
+        return res.status(401).json({ message: "Invalid password" });
+      }
+
+      // Buat token JWT
+      const token = jwt.sign(
+        {
+          uid: user.uid,
+          username: user.username,
+          email: user.email,
+          image_url: user.image_url,
+          isAdmin: user.isAdmin,
+        },
+        secretKey,
+        { expiresIn: "1h" }
+      );
+
+      // Simpan token di cookie
+      res.cookie("access_token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production", // Set to true in production
+        maxAge: 33600000, // 1h
+        path: "/", // Ensure the cookie is accessible on all routes
+      });
+
+      // Simpan informasi pengguna ke dalam sesi
+      req.session.uid = user.uid;
+      req.session.username = user.username;
+      req.session.email = user.email;
+      req.session.image_url = user.image_url;
+      req.session.isAdmin = user.isAdmin;
+
+      console.log(`Welcome ${req.session.username}`);
+
+      return res.status(200).json({
+        error: false,
+        message: `Welcome ${req.session.username}`,
+        data: req.session,
+        token: token,
+      });
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json({ message: "Internal server error" });
     }
-
-    const user = userSnapshot.docs[0].data();
-
-    // Bandingkan password
-    const isValid = await bcrypt.compare(password, user.password);
-    if (!isValid) {
-      return res.status(401).json({ message: 'Invalid password' });
-    }
-
-    // Buat token JWT
-    const token = jwt.sign(
-      {
-        uid: user.uid,
-        username: user.username,
-        email: user.email,
-        image_url: user.image_url,
-        isAdmin: user.isAdmin,
-      },
-      secretKey,
-      { expiresIn: '1h' }
-    );
-
-    // Simpan token di cookie
-    res.cookie('access_token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // Set to true in production
-      maxAge: 3600000, // 1 hour
-      path: '/' // Ensure the cookie is accessible on all routes
-    });
-
-    // Simpan informasi pengguna ke dalam sesi
-    req.session.uid = user.uid;
-    req.session.username = user.username;
-    req.session.email = user.email;
-    req.session.image_url = user.image_url;
-    req.session.isAdmin = user.isAdmin;
-
-    console.log(`Welcome ${req.session.username}`);
-
-    return res.status(200).json({
-      error: false,
-      message: `Welcome ${req.session.username}`,
-      data: req.session,
-      token: token,
-    });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ message: 'Internal server error' });
-    } 
   }
 
   async register(req, res) {
@@ -173,7 +173,7 @@ class AuthController {
         message: "User berhasil dibuat",
       });
     } catch (err) {
-      console.error(err);
+      console.log(err);
       return res.status(500).json({
         error: true,
         message: "Internal server error",
@@ -181,54 +181,54 @@ class AuthController {
     }
   }
 
-  async verifyToken(req, res) {
-    if (
-      !req.headers.authorization ||
-      !req.headers.authorization.startsWith("Bearer ")
-    ) {
-      return res.status(401).send({
-        success: false,
-        message: "Unauthorized",
-      });
-    }
-    const idToken = req.headers.authorization.split("Bearer ")[1];
+  // async verifyToken(req, res) {
+  //   if (
+  //     !req.headers.authorization ||
+  //     !req.headers.authorization.startsWith("Bearer ")
+  //   ) {
+  //     return res.status(401).send({
+  //       success: false,
+  //       message: "Unauthorized",
+  //     });
+  //   }
+  //   const idToken = req.headers.authorization.split("Bearer ")[1];
 
-    try {
-      const decodedToken = await getAuth().verifyIdToken(idToken);
-      const uid = decodedToken.uid;
+  //   try {
+  //     const decodedToken = await getAuth().verifyIdToken(idToken);
+  //     const uid = decodedToken.uid;
 
-      if (!uid) {
-        return res.status(401).send({
-          success: false,
-          message: "Unauthorized",
-        });
-      }
+  //     if (!uid) {
+  //       return res.status(401).send({
+  //         success: false,
+  //         message: "Unauthorized",
+  //       });
+  //     }
 
-      const user = await User.getUserByUid(uid);
-      if (!user) {
-        return res.status(401).send({
-          success: false,
-          message: "Unauthorized",
-        });
-      }
+  //     const user = await User.getUserByUid(uid);
+  //     if (!user) {
+  //       return res.status(401).send({
+  //         success: false,
+  //         message: "Unauthorized",
+  //       });
+  //     }
 
-      return res.status(200).send({
-        success: true,
-        message: "Token is valid",
-        data: {
-          id: uid,
-          nama: user.name,
-          email: user.email,
-          isAdmin: user.isAdmin,
-        },
-      });
-    } catch (error) {
-      res.status(error.code === "auth/id-token-expired" ? 401 : 500).send({
-        success: false,
-        message: error.message,
-      });
-    }
-  }
+  //     return res.status(200).send({
+  //       success: true,
+  //       message: "Token is valid",
+  //       data: {
+  //         id: uid,
+  //         nama: user.name,
+  //         email: user.email,
+  //         isAdmin: user.isAdmin,
+  //       },
+  //     });
+  //   } catch (error) {
+  //     res.status(error.code === "auth/id-token-expired" ? 401 : 500).send({
+  //       success: false,
+  //       message: error.message,
+  //     });
+  //   }
+  // }
 
   async authenticateToken(req, res) {
     const authHeader = req.headers["authorization"];
@@ -262,15 +262,50 @@ class AuthController {
       req.session = null; // Contoh untuk menghapus sesi
 
       // Menghapus token dari cookie
-      res.clearCookie('access_token', { path: '/' });
+      res.clearCookie("access_token", { path: "/" });
 
-      return res.status(200).json({ message: 'Logged out successfully' });
+      return res.status(200).json({ message: "Logged out successfully" });
     } catch (err) {
-      console.error(err);
-      return res.status(500).json({ message: 'Internal server error' });
+      console.log(err);
+      return res.status(500).json({ message: "Internal server error" });
     }
   }
 
+  async refreshToken(req, res) {
+    const user = req.user;
+  
+    // Generate new token
+    const newToken = jwt.sign(
+      {
+        uid: user.uid,
+        username: user.username,
+        email: user.email,
+        image_url: user.image_url,
+        isAdmin: user.isAdmin,
+      },
+      secretKey,
+      { expiresIn: "1h" }
+    );
+  
+    // Data response
+    const data_token= {
+      token: newToken,
+      user: {
+        uid: user.uid,
+        username: user.username,
+        email: user.email,
+        image_url: user.image_url,
+        isAdmin: user.isAdmin,
+      }
+    };
+  
+    // Send new token to client
+    res.status(200).json({
+      success: true,
+      message: "Token refreshed successfully",
+      data: data_token,
+    });
+  }
 }
 
 module.exports = AuthController;

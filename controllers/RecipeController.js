@@ -117,7 +117,7 @@ class RecipeController {
         data: makanan,
       });
     } catch (err) {
-      console.error("Error fetching favorite recipes:", err);
+      console.log("Error fetching favorite recipes:", err);
 
       res.status(500).json({
         message: "error",
@@ -288,7 +288,5 @@ class RecipeController {
             message: error,
         });
     }
-}
-
 }
 module.exports = RecipeController;
