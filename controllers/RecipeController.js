@@ -261,24 +261,34 @@ class RecipeController {
     }
   }
 
-  async deleteRecipe(req, res) {
+  async deleteRecipes(req, res) {
     try {
-      const recipeId = req.params.id;
+        const { ids } = req.body; // Mengambil array ID dari body permintaan
 
-      await db.collection("makanan").doc(recipeId).delete();
+        if (!Array.isArray(ids)) {
+            return res.status(400).json({
+                error: true,
+                message: "Invalid request format. 'ids' should be an array."
+            });
+        }
 
-      console.log("Resep berhasil dihapus");
-      return res.status(200).json({
-        error: false,
-        message: "Resep berhasil dihapus",
-      });
+        // Menghapus setiap dokumen berdasarkan ID
+        const deletePromises = ids.map(id => db.collection("makanan").doc(id).delete());
+        await Promise.all(deletePromises);
+
+        console.log("Resep berhasil dihapus");
+        return res.status(200).json({
+            error: false,
+            message: "Resep berhasil dihapus",
+        });
     } catch (error) {
-      console.log(error);
-      return res.status(500).json({
-        error: true,
-        message: error,
-      });
+        console.log(error);
+        return res.status(500).json({
+            error: true,
+            message: error,
+        });
     }
-  }
+}
+
 }
 module.exports = RecipeController;
