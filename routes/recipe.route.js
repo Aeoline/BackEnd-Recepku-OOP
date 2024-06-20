@@ -23,7 +23,8 @@ router.get("/recipes/:title", middleware.isUserMiddleware, (req, res) => {
 
 router.post("/recipes", [middleware.isUserMiddleware, middleware.isAdminMiddleware], (req, res) => recipeController.addRecipe(req, res));
 router.put("/recipes/:id", [middleware.isUserMiddleware, middleware.isAdminMiddleware], (req, res) => recipeController.updateRecipe(req, res));
-router.delete("/recipes/:id", [middleware.isUserMiddleware, middleware.isAdminMiddleware], (req, res) => recipeController.deleteRecipe(req, res));
+router.delete("/recipes/:id", [middleware.isUserMiddleware, middleware.isAdminMiddleware], (req, res) => recipeController.deleteRecipes(req, res));
+
 
 router.get("/recommended_recipes/", (req, res) => recipeController.getFavRecipe(req, res));
 

@@ -24,7 +24,7 @@ class RecipeController {
       });
 
       makanan.sort((a, b) => new Date(b.created_on) - new Date(a.created_on));
-      
+
       res.status(200).json({
         message: "success",
         data: makanan,
@@ -117,7 +117,7 @@ class RecipeController {
         data: makanan,
       });
     } catch (err) {
-      console.log("Error fetching favorite recipes:", err);
+      console.error("Error fetching favorite recipes:", err);
 
       res.status(500).json({
         message: "error",
@@ -262,34 +262,51 @@ class RecipeController {
   }
 
   async deleteRecipes(req, res) {
-    try {
-      const { ids } = req.body; // Mengambil array ID dari body permintaan
+    const { id } = req.params;
 
-      if (!Array.isArray(ids)) {
-        return res.status(400).json({
-          error: true,
-          message: "Invalid request format. 'ids' should be an array.",
-        });
+    try {
+      const recipesIds = id.split(",").filter((recipeId) => recipeId); // Filter out empty IDs
+      console.log("Recipes IDs to delete:", recipesIds);
+
+      if (recipesIds.length === 0) {
+        throw new Error("No valid recipe IDs provided");
       }
 
-      // Menghapus setiap dokumen berdasarkan ID
-      const deletePromises = ids.map((id) =>
-        db.collection("makanan").doc(id).delete()
-      );
-      await Promise.all(deletePromises);
+      const deletePromises = recipesIds.map(async (recipeId) => {
+        const docRef = db.collection("makanan").doc(recipeId);
+        const recipe = await docRef.get();
 
-      console.log("Resep berhasil dihapus");
-      return res.status(200).json({
-        error: false,
-        message: "Resep berhasil dihapus",
+        if (!recipe.exists) {
+          console.log(`Recipe with ID ${recipeId} not found`);
+          return {
+            recipeId,
+            success: false,
+            message: "Recipe not found",
+          };
+        }
+
+        await docRef.delete();
+        console.log(`Recipe with ID ${recipeId} deleted successfully`);
+
+        return {
+          recipeId,
+          success: true,
+          message: "Deleted recipe successfully",
+        };
       });
+
+      const results = await Promise.all(deletePromises);
+      console.log("Delete results:", results);
+
+      res.status(200).json(results);
     } catch (error) {
-      console.log(error);
-      return res.status(500).json({
-        error: true,
-        message: error,
+      console.error("Error deleting recipes:", error);
+      res.status(500).json({
+        success: false,
+        message: error.message,
       });
     }
   }
 }
+
 module.exports = RecipeController;
