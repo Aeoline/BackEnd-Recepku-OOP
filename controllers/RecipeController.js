@@ -265,51 +265,48 @@ class RecipeController {
     const { id } = req.params;
 
     try {
-        const recipesIds = id.split(",").filter(recipeId => recipeId); // Filter out empty IDs
-        console.log('Recipes IDs to delete:', recipesIds);
+      const recipesIds = id.split(",").filter((recipeId) => recipeId); // Filter out empty IDs
+      console.log("Recipes IDs to delete:", recipesIds);
 
-        if (recipesIds.length === 0) {
-            throw new Error('No valid recipe IDs provided');
+      if (recipesIds.length === 0) {
+        throw new Error("No valid recipe IDs provided");
+      }
+
+      const deletePromises = recipesIds.map(async (recipeId) => {
+        const docRef = db.collection("makanan").doc(recipeId);
+        const recipe = await docRef.get();
+
+        if (!recipe.exists) {
+          console.log(`Recipe with ID ${recipeId} not found`);
+          return {
+            recipeId,
+            success: false,
+            message: "Recipe not found",
+          };
         }
 
-        const deletePromises = recipesIds.map(async (recipeId) => {
-            const docRef = db.collection("makanan").doc(recipeId);
-            const recipe = await docRef.get();
+        await docRef.delete();
+        console.log(`Recipe with ID ${recipeId} deleted successfully`);
 
-            if (!recipe.exists) {
-                console.log(`Recipe with ID ${recipeId} not found`);
-                return {
-                    recipeId,
-                    success: false,
-                    message: "Recipe not found",
-                };
-            }
+        return {
+          recipeId,
+          success: true,
+          message: "Deleted recipe successfully",
+        };
+      });
 
-            await docRef.delete();
-            console.log(`Recipe with ID ${recipeId} deleted successfully`);
+      const results = await Promise.all(deletePromises);
+      console.log("Delete results:", results);
 
-            return {
-                recipeId,
-                success: true,
-                message: "Deleted recipe successfully",
-            };
-        });
-
-        const results = await Promise.all(deletePromises);
-        console.log('Delete results:', results);
-
-        res.status(200).json(results);
+      res.status(200).json(results);
     } catch (error) {
-        console.error('Error deleting recipes:', error);
-        res.status(500).json({
-            success: false,
-            message: error.message,
-        });
+      console.error("Error deleting recipes:", error);
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
     }
-}
-
-
-
+  }
 }
 
 module.exports = RecipeController;

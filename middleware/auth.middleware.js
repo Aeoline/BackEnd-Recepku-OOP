@@ -25,7 +25,7 @@ const isUserMiddleware = async (req, res, next) => {
 
     jwt.verify(token, secretKey, (err, user) => {
       if (err) {
-        console.error("JWT verification error:", err); // Logging error
+        console.log("JWT verification error:", err); // Logging error
         return res.status(401).json({
           error: true,
           message: "Unauthorized",
@@ -36,7 +36,7 @@ const isUserMiddleware = async (req, res, next) => {
       next();
     });
   } catch (error) {
-    console.error("Token processing error:", error); // Logging error
+    console.log("Token processing error:", error); // Logging error
     res.status(error.code === "auth/id-token-expired" ? 401 : 500).send({
       success: false,
       message: error.message,
@@ -46,6 +46,7 @@ const isUserMiddleware = async (req, res, next) => {
 
 const isAdminMiddleware = async (req, res, next) => {
   if (!req.user) {
+    console.log("No user found in request:", req.user); // Logging no user
     return res.status(401).send({
       success: false,
       message: "Unauthorized",
@@ -53,10 +54,10 @@ const isAdminMiddleware = async (req, res, next) => {
   }
 
   if (!req.user.isAdmin) {
-    console.error("User is not an admin:", req.user); // Logging non-admin user
+    console.log("User is not an admin:", req.user); // Logging non-admin user
     return res.status(403).json({
       error: true,
-      message: "Forbidden",
+      message: "Forbidden isAdminMiddleware",
     });
   }
 
