@@ -14,7 +14,7 @@ class Recipe {
     this.healthyIngredients = data.healthyIngredients;
     this.steps = data.steps;
     this.healthySteps = Array.isArray(data.healthySteps) ? data.healthySteps : [data.healthySteps];
-    this.isFavorite = data.isFavorite || false;
+    this.isFavorite = data.isFavorite
     this.photoUrl = data.photoUrl;
     this.created_on = data.created_on || new Date();
   }
