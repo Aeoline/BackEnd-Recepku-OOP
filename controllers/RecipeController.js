@@ -5,6 +5,7 @@ var bcrypt = require("bcryptjs");
 var db = fire.firestore();
 const { v4: uuidv4 } = require("uuid");
 const multer = require("multer");
+const upload = multer({ storage: multer.memoryStorage() });
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 
@@ -184,7 +185,6 @@ class RecipeController {
   async addRecipe(req, res) {
     try {
       const data = req.body;
-
       const snapshot = await db
         .collection("makanan")
         .orderBy("id", "desc")
@@ -198,27 +198,68 @@ class RecipeController {
 
       const newId = lastId + 1;
 
-      await db.collection("makanan").doc(newId.toString()).set({
-        id: newId,
-        title: data.title,
-        slug: data.slug,
-        description: data.description,
-        calories: data.calories,
-        healthyCalories: data.healthyCalories,
-        ingredients: data.ingredients,
-        healthyIngredients: data.healthyIngredients,
-        steps: data.steps,
-        healthySteps: data.healthySteps,
-        isFavorite: false,
-        photoUrl: data.photoUrl,
-        created_on: new Date().toISOString(),
-      });
+      let photoUrl = '';
+      if (req.file) {
+        const blob = bucket.file(`recipes/${newId}/${req.file.originalname}`);
+        const blobStream = blob.createWriteStream();
 
-      console.log("Resep berhasil dibuat");
-      return res.status(200).json({
-        error: false,
-        message: "Resep berhasil dibuat",
-      });
+        blobStream.on('error', (error) => {
+          throw error;
+        });
+
+        blobStream.on('finish', async () => {
+          photoUrl = await blob.getSignedUrl({
+            action: 'read',
+            expires: '03-01-2500',
+          });
+
+          await db.collection("makanan").doc(newId.toString()).set({
+            id: newId,
+            title: data.title,
+            slug: data.slug,
+            description: data.description,
+            calories: data.calories,
+            healthyCalories: data.healthyCalories,
+            ingredients: data.ingredients,
+            healthyIngredients: data.healthyIngredients,
+            steps: data.steps,
+            healthySteps: data.healthySteps,
+            isFavorite: false,
+            photoUrl: photoUrl[0],
+            created_on: new Date().toISOString(),
+          });
+
+          console.log("Resep berhasil dibuat");
+          return res.status(200).json({
+            error: false,
+            message: "Resep berhasil dibuat",
+          });
+        });
+
+        blobStream.end(req.file.buffer);
+      } else {
+        await db.collection("makanan").doc(newId.toString()).set({
+          id: newId,
+          title: data.title,
+          slug: data.slug,
+          description: data.description,
+          calories: data.calories,
+          healthyCalories: data.healthyCalories,
+          ingredients: data.ingredients,
+          healthyIngredients: data.healthyIngredients,
+          steps: data.steps,
+          healthySteps: data.healthySteps,
+          isFavorite: false,
+          photoUrl: data.photoUrl,
+          created_on: new Date().toISOString(),
+        });
+
+        console.log("Resep berhasil dibuat");
+        return res.status(200).json({
+          error: false,
+          message: "Resep berhasil dibuat",
+        });
+      }
     } catch (error) {
       console.log(error);
       return res.status(500).json({
