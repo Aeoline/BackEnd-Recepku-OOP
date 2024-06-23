@@ -9,7 +9,7 @@ const middleware = require("../middleware/auth.middleware");
 
 // Tambahkan logging untuk debugging
 router.use((req, res, next) => {
-  console.log("Middleware executed");
+  console.log("Middleware executed Main");
   next();
 });
 

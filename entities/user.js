@@ -64,8 +64,8 @@ class User {
       }
       return snapshot.docs.map((doc) => new User(doc.data()));
     } catch (error) {
-      console.error('Error in User.getAll:', error);  // Log error detail
-      throw error;  // Re-throw the error after logging it
+      console.log("Error in User.getAll:", error); // Log error detail
+      throw error; // Re-throw the error after logging it
     }
   }
 }

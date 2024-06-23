@@ -66,8 +66,8 @@ app.use(auth)
 var user = require('./routes/user.route')
 app.use(user)
 // profile route
-var profile = require('./route/profile')
-app.use(profile)
+// var profile = require('./routes/profile')
+// app.use(profile)
 // makanan route
 var recipe = require('./routes/recipe.route')
 app.use(recipe)
@@ -76,8 +76,8 @@ var main = require('./routes/main.route')
 app.use(main)
 
 //seeder_makanan route
-var seeder_makanan = require('./route/seeder_makanan')
-app.use(seeder_makanan)
+// var seeder_makanan = require('./route/seeder_makanan')
+// app.use(seeder_makanan)
 
 // server
 var port = process.env.PORT || 3001
