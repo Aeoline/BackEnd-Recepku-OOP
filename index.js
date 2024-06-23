@@ -24,10 +24,6 @@ app.use(session({
 var cookieParser = require('cookie-parser')
 app.use(cookieParser());
 
-app.use(bodyParser.json({ limit: '10mb' }));
-app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
-
-
 // jwt
 const jwt = require('jsonwebtoken')
 const secretKey = 'MyLovelyYaeMiko'
