@@ -24,6 +24,10 @@ app.use(session({
 var cookieParser = require('cookie-parser')
 app.use(cookieParser());
 
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
+
+
 // jwt
 const jwt = require('jsonwebtoken')
 const secretKey = 'MyLovelyYaeMiko'
@@ -65,19 +69,12 @@ app.use(auth)
 // user route
 var user = require('./routes/user.route')
 app.use(user)
-// profile route
-// var profile = require('./routes/profile')
-// app.use(profile)
 // makanan route
 var recipe = require('./routes/recipe.route')
 app.use(recipe)
 // main route
 var main = require('./routes/main.route')
 app.use(main)
-
-//seeder_makanan route
-// var seeder_makanan = require('./route/seeder_makanan')
-// app.use(seeder_makanan)
 
 // server
 var port = process.env.PORT || 3001
